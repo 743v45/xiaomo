@@ -144,6 +144,21 @@ body{
 body.noconn .rbtn,body.noconn .rp,body.noconn .rticks,body.noconn .stop{opacity:.4;pointer-events:none}
 body.noconn .rbtn{cursor:not-allowed}
 
+/* 蓝牙连接钮(右上角):状态即颜色 */
+.bt{width:52px;height:52px;border-radius:50%;cursor:pointer;
+  background:linear-gradient(180deg,#2C3342,#1B1E26 60%,#14161C);
+  border:3px solid rgba(255,255,255,.92);color:var(--txt2);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.16),0 8px 0 #05070A;
+  transition:transform .14s var(--pop),box-shadow .14s var(--ease),background .14s var(--ease),color .14s}
+.bt:active{transform:translateY(8px);box-shadow:inset 0 3px 0 rgba(255,255,255,.08),0 2px 0 #05070A}
+.bt svg{width:26px;height:26px;pointer-events:none}
+.bt.trying{color:#FFB300;animation:btblink 1s infinite}
+.bt.ok{color:var(--lime)}
+.bt.fail{color:var(--red);border-color:var(--red)}
+@keyframes btblink{50%{opacity:.35}}
+body.noconn .btn{opacity:.45}
+
 /* 训练 */
 .course{cursor:pointer;transition:transform .14s var(--pop)}
 .course:active{transform:translateY(6px)}
@@ -194,8 +209,14 @@ body.noconn .rbtn{cursor:not-allowed}
 
 <!-- ============ 运动 ============ -->
 <div class="view on" id="v-dash">
-  <div class="nav"><h1>动力场</h1><small>POWER ZONE · WEB</small></div>
-  <div class="pill tap" id="pillbar" onclick="pillTap()"><span class="dot" id="dot"></span><b id="dname">点击连接机器</b><em id="dmode">Web Bluetooth</em></div>
+  <div class="nav">
+    <div><h1>动力场</h1><small>POWER ZONE · WEB</small></div>
+    <button class="bt off" id="btbtn" onclick="pillTap()" title="点击连接机器">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+        <path d="M14.88 16.29L13 18.17v-3.76l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83m4.71 1.88L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/>
+      </svg>
+    </button>
+  </div>
 
   <div class="hero" id="hero">
     <div id="heroRun" style="display:none;width:100%;display:flex;flex-direction:column;align-items:center">
@@ -343,12 +364,12 @@ const S={state:'idle',elapsed:0,dist:0,kcal:0,watts:0,maxSpeed:0,
 /* 连接状态机:off(未连接,可点)→ trying(连接中)→ ok(已连接)/ fail(失败,可重试) */
 let connState='off',connMsg='';
 function drawConn(){
-  const pill=$('pillbar'),dot=$('dot'),name=$('dname');
-  pill.classList.remove('trying','fail','ok');
-  if(connState==='trying'){pill.classList.add('trying');pill.classList.add('tap');dot.className='dot';name.textContent='连接中…'}
-  else if(connState==='fail'){pill.classList.add('fail');pill.classList.add('tap');dot.className='dot';name.textContent=`连接失败 · ${connMsg||'点击重试'}`}
-  else if(connState==='ok'){pill.classList.add('ok');dot.className='dot on';name.textContent=(dev&&dev.name)||'MOBI 设备'}
-  else{pill.classList.add('tap');dot.className='dot';name.textContent='点击连接机器'}
+  const b=$('btbtn');
+  b.classList.remove('off','trying','ok','fail');
+  if(connState==='trying'){b.classList.add('trying');b.title='连接中…'}
+  else if(connState==='fail'){b.classList.add('fail');b.title='连接失败 · 点击重试'}
+  else if(connState==='ok'){b.classList.add('ok');b.title='已连接 '+((dev&&dev.name)||'MOBI 设备')}
+  else{b.classList.add('off');b.title='点击连接机器'}
 }
 function pillTap(){if(connState==='off'||connState==='fail')connect()}
 async function connect(){
@@ -374,7 +395,6 @@ async function connect(){
 }
 function setConn(state,msg){connState=state;connMsg=msg||'';drawConn();
   document.body.classList.toggle('noconn',!writeChar);
-  $('mainBtn').textContent=!writeChar?'连接机器':S.state==='running'?'暂 停':S.state==='paused'?'继 续':'开始运动';
 }
 async function send(bytes){
   if(!writeChar)return;
@@ -462,8 +482,7 @@ function render(){
   $('pdist').textContent=`${S.dist.toFixed(2)} / ${S.goal} KM`;
   $('rpct').textContent=Math.min(100,Math.round(S.dist/S.goal*100))+'%';
   drawRing(z.color,Math.min(1,S.dist/S.goal));
-  $('mainBtn').textContent=!conn?'连接机器':S.state==='running'?'暂 停':S.state==='paused'?'继 续':'开始运动';
-  $('mainBtn').classList.toggle('conn',!conn);
+  $('mainBtn').classList.toggle('conn',!conn); /* 未连接琥珀提示 */
   $('hero').classList.toggle('off',!conn);
   $('stopBtn').style.display=S.state!=='idle'?'':'none';
   if(run)drawSpark();
