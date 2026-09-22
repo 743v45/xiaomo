@@ -31,7 +31,7 @@ function zoneForWatts(watts, ftp) {
 
 // 功率估算:机器只上报速度+阻力(qdomyos 同款估算法,待协议验证后精化)
 function estWatts(speedKmh, resistance) {
-  return Math.round(8 + speedKmh * 3.5 * (0.5 + resistance / 15));
+  return Math.round(8 + speedKmh * 3.5 * (0.5 + resistance / 24));
 }
 
 module.exports = { ZONES, getFTP, setFTP, zoneForPct, zoneForWatts, estWatts, DEFAULT_FTP };

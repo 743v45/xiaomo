@@ -13,8 +13,7 @@ Page({
     connected: false, deviceName: '', isMock: bt.isMock,
     running: false,
     watts: 0, zone: ZONES[0], zonePct: 0, zones: ZONES,
-    status: { speed: '0.0', cadence: 0, kcal: 0, distance: '0.00', heart: 0 },
-    heartHot: false,
+    status: { speed: '0.0', cadence: 0, kcal: 0, distance: '0.00' },
     session: { timeText: '00:00', dist: '0.00', progPct: 0 },
     goalKm: getApp().globalData.goalKm,
     resistance: 1,
@@ -32,6 +31,9 @@ Page({
     this.setData({ statusBarHeight: getApp().globalData.statusBarHeight });
     bt.connect({}).then(info => {
       this.setData({ connected: true, deviceName: info.name, resistance: bt.getCurrentResistance() });
+    }).catch(e => {
+      oplog.add('conn_fail', (e && e.errMsg) || '自动连接失败');
+      // 模拟器/未开蓝牙会走到这里;用户点「连接机器」可重试
     });
     // mock/真机统一的数据入口:bluetooth 层不直接推帧给页面,
     // 这里用 500ms 视图刷新循环读取 session.last
@@ -66,9 +68,7 @@ Page({
         cadence: last ? last.cadence : 0,
         kcal: Math.round(s.kcal),
         distance: s.distance.toFixed(2),
-        heart: last ? last.heart : 0,
       },
-      heartHot: !!last && last.heart >= 120,
       session: {
         timeText: fmtTime(s.elapsed),
         dist: s.distance.toFixed(2),

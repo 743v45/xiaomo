@@ -33,9 +33,7 @@ function tick() {
   state.heart = Math.round((state.heart || hrTarget) * 0.97 + hrTarget * 0.03);
 
   // 累计
-  state.distance += (spd / 3600) * dt;
-  const watts = Math.round(8 + spd * 3.5 * (0.5 + state.resistance / 15));
-  state.kcal += watts * dt / 3600 * 0.86; // 粗略功率→千卡
+  const watts = Math.round(8 + spd * 3.5 * (0.5 + state.resistance / 24));
   state.sessionSec += dt;
 
   state.speedSamples.push(+spd.toFixed(1));
