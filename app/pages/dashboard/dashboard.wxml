@@ -1,10 +1,7 @@
 <view class="page grid-bg">
   <!-- 大标题导航(自定义) -->
   <view class="nav" style="padding-top: {{statusBarHeight + 8}}px">
-    <view>
-      <text class="nav-title">动力场</text>
-      <text class="nav-sub">POWER ZONE</text>
-    </view>
+    <text class="nav-title">动力场</text>
     <view class="conn-btn {{connState === 'ok' ? 'conn-ok' : connState === 'fail' ? 'conn-fail' : (connState === 'scanning' || connState === 'connecting') ? 'conn-busy' : ''}}"
           bindtap="onConnTap">
       <image class="bt-logo" src="{{connImg}}"/>
