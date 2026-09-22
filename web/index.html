@@ -42,6 +42,14 @@ body{
 .dot.on{background:var(--lime);box-shadow:0 0 0 5px rgba(238,255,0,.12)}
 .pill b{flex:1;font-size:13px}
 .pill em{font-style:normal;color:var(--txt2);font-size:11px;border:1px solid var(--line);border-radius:99px;padding:2px 10px}
+.pill.tap{cursor:pointer}
+.pill.tap:hover b{color:var(--lime)}
+.pill.trying .dot{background:#FFB300;box-shadow:0 0 0 5px rgba(255,179,0,.12)}
+.pill.trying b{color:#FFB300}
+.pill.fail .dot{background:var(--red);box-shadow:0 0 0 5px rgba(255,77,94,.12)}
+.pill.fail b{color:var(--red)}
+.pill.fail em,.pill.trying em{opacity:.5}
+.pill.ok{cursor:default}
 
 /* Zone hero */
 .hero{
@@ -187,7 +195,7 @@ body.noconn .rbtn{cursor:not-allowed}
 <!-- ============ 运动 ============ -->
 <div class="view on" id="v-dash">
   <div class="nav"><h1>动力场</h1><small>POWER ZONE · WEB</small></div>
-  <div class="pill"><span class="dot" id="dot"></span><b id="dname">未连接</b><em id="dmode">Web Bluetooth</em></div>
+  <div class="pill tap" id="pillbar" onclick="pillTap()"><span class="dot" id="dot"></span><b id="dname">点击连接机器</b><em id="dmode">Web Bluetooth</em></div>
 
   <div class="hero" id="hero">
     <div id="heroRun" style="display:none;width:100%;display:flex;flex-direction:column;align-items:center">
@@ -332,7 +340,20 @@ const S={state:'idle',elapsed:0,dist:0,kcal:0,watts:0,maxSpeed:0,
   spSum:0,spN:0,cadSum:0,resSum:0,resN:0,wSum:0,wN:0,trace:[],last:null,_t:0,res:1,
   ftp:+localStorage.xm_ftp||150,goal:+localStorage.xm_goal||5};
 
+/* 连接状态机:off(未连接,可点)→ trying(连接中)→ ok(已连接)/ fail(失败,可重试) */
+let connState='off',connMsg='';
+function drawConn(){
+  const pill=$('pillbar'),dot=$('dot'),name=$('dname');
+  pill.classList.remove('trying','fail','ok');
+  if(connState==='trying'){pill.classList.add('trying');pill.classList.add('tap');dot.className='dot';name.textContent='连接中…'}
+  else if(connState==='fail'){pill.classList.add('fail');pill.classList.add('tap');dot.className='dot';name.textContent=`连接失败 · ${connMsg||'点击重试'}`}
+  else if(connState==='ok'){pill.classList.add('ok');dot.className='dot on';name.textContent=(dev&&dev.name)||'MOBI 设备'}
+  else{pill.classList.add('tap');dot.className='dot';name.textContent='点击连接机器'}
+}
+function pillTap(){if(connState==='off'||connState==='fail')connect()}
 async function connect(){
+  if(connState==='trying')return;
+  setConn('trying');
   try{
     dev=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'MOBI'},{namePrefix:'mobi'}],optionalServices:[SVC]});
     const srv=await dev.gatt.connect();
@@ -341,10 +362,19 @@ async function connect(){
     const nc=await svc.getCharacteristic(CN);
     await nc.startNotifications();
     nc.addEventListener('characteristicvaluechanged',onFrame);
-    dev.addEventListener('gattserverdisconnected',()=>{writeChar=null;document.getElementById('dot').classList.remove('on');document.getElementById('dname').textContent='未连接';});
-    document.getElementById('dot').classList.add('on');
-    document.getElementById('dname').textContent=dev.name;
-  }catch(e){alert('连接失败:'+e.message)}
+    dev.addEventListener('gattserverdisconnected',()=>{writeChar=null;setConn('off')});
+    setConn('ok');vib(50);
+    render();
+  }catch(e){
+    // 用户取消选择不算失败
+    const msg=(e&&e.message)||'';
+    if(/cancel|选择/i.test(msg)){setConn('off')}
+    else{setConn('fail',msg.replace('NotFoundError:','').trim().slice(0,24) || '失败')}
+  }
+}
+function setConn(state,msg){connState=state;connMsg=msg||'';drawConn();
+  document.body.classList.toggle('noconn',!writeChar);
+  $('mainBtn').textContent=!writeChar?'连接机器':S.state==='running'?'暂 停':S.state==='paused'?'继 续':'开始运动';
 }
 async function send(bytes){
   if(!writeChar)return;
