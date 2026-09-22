@@ -68,6 +68,7 @@ page {
 /* 数据数字:粗、表格数字、负字距 */
 .mono {
   font-weight: 700;
+  font-style: italic; /* ARCADE SPORTS:数字斜体=速度感 */
   font-variant-numeric: tabular-nums;
   letter-spacing: -2rpx;
 }
@@ -93,6 +94,15 @@ page {
     inset 0 3rpx 0 rgba(255, 255, 255, 0.10),
     0 12rpx 0 #05070A,
     14rpx 18rpx 0 rgba(0, 0, 0, 0.45);
+}
+/* ARCADE SPORTS:lime 袖标(左上角签名,全站统一) */
+.hud-panel::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0;
+  width: 10rpx; height: 44rpx;
+  background: var(--lime);
+  border-radius: 0 0 10rpx 0;
 }
 
 /* 主按钮:3D 厚按键(侧壁挤出,按下压到底) */

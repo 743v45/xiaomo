@@ -30,6 +30,8 @@ body{
 /* 卡片:立体 3D */
 .card{
   position:relative;background:linear-gradient(180deg,#1B1E27,#14161C 55%,#101218);
+  overflow:hidden}
+.card::before{content:'';position:absolute;left:0;top:0;width:6px;height:26px;background:var(--lime);border-radius:0 0 6px 0}
   border:3px solid rgba(255,255,255,.92);border-radius:var(--r-xl);
   box-shadow:inset 0 3px 0 rgba(255,255,255,.10),0 12px 0 #05070A,14px 18px 0 rgba(0,0,0,.45);
   padding:18px;margin-bottom:20px;
@@ -53,14 +55,16 @@ body{
 
 /* Zone hero */
 .hero{
-  background:linear-gradient(180deg,var(--violet2) 0%,var(--violet) 50%,#4A21C9 100%);
+  background:
+    repeating-linear-gradient(115deg, transparent 0 18px, rgba(255,255,255,.05) 18px 36px),
+    linear-gradient(180deg,var(--violet2) 0%,var(--violet) 50%,#4A21C9 100%);
   border:3px solid rgba(255,255,255,.92);border-radius:var(--r-xl);
   box-shadow:inset 0 6px 0 rgba(255,255,255,.22),0 12px 0 var(--violet-side),14px 18px 0 rgba(0,0,0,.4);
   padding:24px 24px 16px;min-height:210px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:20px}
 .ztag{font-size:13px;font-weight:800;border-radius:99px;padding:5px 18px;letter-spacing:1px}
 .zen{color:rgba(255,255,255,.55);font-size:11px;letter-spacing:4px;margin-left:10px}
 .zrow{display:flex;align-items:baseline;gap:10px;margin:10px 0}
-.zw{font-size:64px;font-weight:800;color:#fff;letter-spacing:-2px;line-height:1;text-shadow:0 4px 0 rgba(0,0,0,.28)}
+.zw{font-size:64px;font-weight:800;font-style:italic;color:#fff;letter-spacing:-2px;line-height:1;text-shadow:0 4px 0 rgba(0,0,0,.28)}
 .zu{color:rgba(255,255,255,.6);font-size:18px}
 .zp{color:rgba(255,255,255,.6);font-size:13px;margin-left:8px}
 .zband{display:flex;gap:6px;width:100%;margin-top:14px}
@@ -75,7 +79,7 @@ body{
 .strip{display:flex;padding:14px 0;margin-bottom:20px}
 .ss{flex:1;display:flex;flex-direction:column;align-items:center;border-right:1px solid var(--line)}
 .ss:last-child{border:none}
-.ss b{font-size:26px;font-weight:800;letter-spacing:-.5px}
+.ss b{font-size:26px;font-weight:800;font-style:italic;letter-spacing:-.5px}
 .ss span{font-size:10px;color:var(--txt2);opacity:.6;letter-spacing:2px;margin-top:3px}
 
 /* 时间+环形 */
@@ -83,7 +87,7 @@ body{
 .ringwrap{position:relative;width:120px;height:120px}
 .ringc{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px}
 .pinfo{display:flex;flex-direction:column;gap:8px}
-.ptime{font-size:44px;font-weight:800;letter-spacing:-1px}
+.ptime{font-size:44px;font-weight:800;font-style:italic;letter-spacing:-1px}
 .pdist{color:var(--txt2);font-size:14px}
 .cbar{margin-top:14px;padding:10px 14px;border-radius:var(--r-lg);background:linear-gradient(180deg,#232733,var(--panel2));
   border:2px solid rgba(255,255,255,.5);box-shadow:0 5px 0 rgba(0,0,0,.55),inset 0 2px 0 rgba(255,255,255,.08);
@@ -104,7 +108,7 @@ body{
   transform:translateY(12px) scale(1.04);background:linear-gradient(180deg,var(--violet2),var(--violet) 70%);
   box-shadow:0 2px 0 #05070A,0 0 64px rgba(238,255,0,.5),0 0 140px rgba(238,255,0,.25)}
 .rcenter{display:flex;align-items:baseline;gap:6px;min-width:120px;justify-content:center}
-.rnum{font-size:64px;font-weight:800;color:var(--lime);letter-spacing:-2px;line-height:1;text-shadow:0 4px 0 rgba(0,0,0,.5)}
+.rnum{font-size:64px;font-weight:800;font-style:italic;color:var(--lime);letter-spacing:-2px;line-height:1;text-shadow:0 4px 0 rgba(0,0,0,.5)}
 .rof{color:var(--txt2);font-size:16px}
 .rticks{display:flex;gap:5px;margin-top:14px}
 .tick{flex:1;height:9px;border-radius:99px;background:linear-gradient(180deg,#262C38,#171A21);
@@ -185,7 +189,7 @@ body.noconn .btn{opacity:.45}
 .wcard:active{background:var(--panel2)}
 .wr{display:flex;justify-content:space-between;align-items:center}
 .wr b{font-size:15px}.wr i{font-style:normal;color:var(--txt2);font-size:12px;display:block;margin-top:4px}
-.wd{text-align:right;font-size:24px;font-weight:800;color:var(--lime)}
+.wd{text-align:right;font-size:24px;font-weight:800;font-style:italic;color:var(--lime)}
 .wu{font-size:10px;color:var(--txt2);display:block}
 .week{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
 .wi{display:flex;flex-direction:column;align-items:center}

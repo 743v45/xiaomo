@@ -39,7 +39,9 @@
 }
 .zone-hero.hero-off .idle-bolt { filter: grayscale(1) opacity(.7); }
 .zone-hero {
-  background: linear-gradient(180deg, var(--violet-2) 0%, var(--violet) 50%, #4A21C9 100%);
+  background:
+    repeating-linear-gradient(115deg, transparent 0 26rpx, rgba(255, 255, 255, 0.05) 26rpx 52rpx),
+    linear-gradient(180deg, var(--violet-2) 0%, var(--violet) 50%, #4A21C9 100%);
   border: 3rpx solid rgba(255, 255, 255, 0.92);
   border-radius: var(--r-xl);
   box-shadow:
