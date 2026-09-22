@@ -1,0 +1,18 @@
+.page {
+  padding: var(--sp-3) var(--sp-4) calc(var(--sp-6) + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; gap: var(--sp-3);
+  min-height: 100vh; box-sizing: border-box;
+}
+
+.sec { padding: var(--sp-5); border-radius: var(--r-xl); }
+.sec-title { font-size: var(--fs-label); color: var(--txt-2); letter-spacing: 6rpx; margin-bottom: var(--sp-3); }
+.row { display: flex; align-items: center; justify-content: space-between; padding: var(--sp-2) 0; }
+.k { color: var(--txt); font-size: var(--fs-body); }
+.v { color: var(--lime); font-size: var(--fs-body); font-weight: 700; }
+.goal-input {
+  width: 120rpx; text-align: center; color: var(--lime);
+  border: 1rpx solid var(--line); border-radius: var(--r-md); padding: 10rpx 0;
+  background: var(--panel-2); font-variant-numeric: tabular-nums;
+}
+.unit { color: var(--txt-2); font-size: var(--fs-caption); margin-left: var(--sp-1); letter-spacing: 2rpx; }
+.about-text { color: var(--txt-2); font-size: var(--fs-caption); line-height: 1.7; }

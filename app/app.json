@@ -1,0 +1,28 @@
+{
+  "pages": [
+    "pages/dashboard/dashboard",
+    "pages/history/history",
+    "pages/profile/profile",
+    "pages/workout-detail/workout-detail",
+    "pages/oplog/oplog"
+  ],
+  "window": {
+    "navigationStyle": "custom",
+    "backgroundColor": "#0A0C10",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#8A8F98",
+    "selectedColor": "#EEFF00",
+    "backgroundColor": "#0A0C10",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/dashboard/dashboard", "text": "运动", "iconPath": "assets/tab-dash.png", "selectedIconPath": "assets/tab-dash-on.png" },
+      { "pagePath": "pages/history/history", "text": "历史", "iconPath": "assets/tab-history.png", "selectedIconPath": "assets/tab-history-on.png" },
+      { "pagePath": "pages/profile/profile", "text": "我的", "iconPath": "assets/tab-profile.png", "selectedIconPath": "assets/tab-profile-on.png" }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

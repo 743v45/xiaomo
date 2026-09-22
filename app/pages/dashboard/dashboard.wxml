@@ -1,0 +1,94 @@
+<view class="page grid-bg">
+  <!-- 大标题导航(自定义) -->
+  <view class="nav" style="padding-top: {{statusBarHeight + 8}}px">
+    <text class="nav-title">动力场</text>
+    <text class="nav-sub">POWER ZONE</text>
+  </view>
+
+  <!-- 连接状态栏 -->
+  <view class="conn-bar hud-panel">
+    <view class="dot {{connected ? 'dot-on' : ''}}"></view>
+    <text class="conn-name">{{connected ? deviceName : '未连接'}}</text>
+    <text class="conn-mode">{{isMock ? '模拟数据' : '真机 BLE'}}</text>
+  </view>
+
+  <!-- Zone 主视觉:连接后紫色;未连接灰色提示待办 -->
+  <view class="zone-hero {{connected ? '' : 'hero-off'}}">
+    <block wx:if="{{running}}">
+      <view class="zone-top">
+        <view class="zone-tag" style="background: {{zone.color}}; color: {{zone.id === 4 ? '#0A0C10' : '#FFFFFF'}}">Z{{zone.id}} {{zone.name}}</view>
+        <text class="zone-en">{{zone.en}}</text>
+      </view>
+      <view class="zone-watts">
+        <text class="watts-num mono">{{watts}}</text>
+        <text class="watts-unit">W</text>
+        <text class="zone-pct">{{zonePct}}% FTP</text>
+      </view>
+      <view class="zone-band">
+        <view wx:for="{{zones}}" wx:key="id"
+              class="zseg {{zone.id >= item.id ? 'zseg-on' : ''}}"
+              style="background: {{item.color}}"></view>
+      </view>
+      <canvas type="2d" id="spark" class="spark"></canvas>
+    </block>
+    <block wx:else>
+      <text class="idle-bolt">⚡</text>
+      <text class="idle-title">准备就绪</text>
+      <text class="idle-desc">连接机器后点下方开始\n功率区间将在这里实时点亮</text>
+    </block>
+  </view>
+
+  <!-- 数据细条:速度 / 步频(SPM) / 功率(W) / 卡路里 -->
+  <view class="stat-strip hud-panel">
+    <view class="ss"><text class="ss-v mono">{{running ? status.speed : '—'}}</text><text class="ss-u">KM/H</text></view>
+    <view class="ss"><text class="ss-v mono">{{running ? status.cadence : '—'}}</text><text class="ss-u">SPM</text></view>
+    <view class="ss"><text class="ss-v mono">{{running ? watts : '—'}}</text><text class="ss-u">W</text></view>
+    <view class="ss"><text class="ss-v mono">{{running ? status.kcal : '—'}}</text><text class="ss-u">KCAL</text></view>
+  </view>
+
+  <!-- 时间 + 环形距离进度 + 课程条 -->
+  <view class="prog-panel hud-panel">
+    <view class="prog-row">
+      <view class="ring-wrap">
+        <canvas type="2d" id="ring" class="ring"></canvas>
+        <text class="ring-center mono">{{session.progPct}}%</text>
+      </view>
+      <view class="prog-info">
+        <text class="time mono">{{session.timeText}}</text>
+        <text class="dist mono">{{session.dist}} / {{goalKm}} KM</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 阻力:卡通加减大按键,双段震动(按下轻震 + 档位顿挫) -->
+  <view class="res-pad hud-panel {{connected ? '' : 'res-dis'}}">
+    <view class="wheel-head">
+      <text class="res-label">阻力 RESISTANCE</text>
+      <text class="wheel-hint">每档一顿,像键盘</text>
+    </view>
+    <view class="res-row">
+      <view class="res-big {{pressed === 'down' ? 'res-big-pressed' : ''}}"
+            data-dir="down"
+            bindtouchstart="resPress" bindtouchend="resRelease" bindtouchcancel="resRelease"
+            bindtap="resDown">−</view>
+      <view class="res-center">
+        <text class="res-num mono">{{resistance}}</text>
+        <text class="res-of">/ {{maxRes}}</text>
+      </view>
+      <view class="res-big {{pressed === 'up' ? 'res-big-pressed' : ''}}"
+            data-dir="up"
+            bindtouchstart="resPress" bindtouchend="resRelease" bindtouchcancel="resRelease"
+            bindtap="resUp">+</view>
+    </view>
+    <view class="wheel-ticks">
+      <view wx:for="{{ticks}}" wx:key="*this"
+            class="tick {{resistance >= item ? 'tick-on' : ''}}"></view>
+    </view>
+  </view>
+
+  <!-- 主控按钮 -->
+  <view class="ctrl-row">
+    <button class="btn-main ctrl-main {{connected ? '' : 'btn-conn'}}" bindtap="mainAction">{{mainBtnText}}</button>
+    <button wx:if="{{showStop}}" class="btn-ghost ctrl-stop" bindtap="stopAction">结束</button>
+  </view>
+</view>

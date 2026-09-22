@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小莫动力场 · Web</title>
+<style>
+:root{
+  --bg:#0A0C10; --panel:#14161C; --panel2:#1B1E26; --ink:#fff; --txt:#EDEFF2; --txt2:#8A8F98;
+  --line:rgba(255,255,255,.08); --lime:#EEFF00; --lime-side:#B8CC00; --violet:#6231F0;
+  --violet2:#7B4FF5; --violet-side:#3C1D9E; --red:#FF4D5E;
+  --r-xl:40px; --r-lg:32px; --r-pill:999px;
+  --pop:cubic-bezier(.34,1.56,.64,1); --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--txt);font-family:-apple-system,"PingFang SC",sans-serif;
+  min-height:100vh;padding:16px 16px 90px;
+  background-image:
+    radial-gradient(560px 560px at 88% 2%, rgba(123,79,245,.30), transparent 70%),
+    radial-gradient(480px 480px at 4% 92%, rgba(98,49,240,.22), transparent 70%),
+    radial-gradient(320px 320px at 80% 55%, rgba(238,255,0,.05), transparent 70%);
+}
+.view{display:none;max-width:560px;margin:0 auto}
+.view.on{display:block}
+.nav{display:flex;align-items:flex-end;justify-content:space-between;padding:8px 4px 14px}
+.nav h1{font-size:32px;font-weight:800;letter-spacing:-1px;text-shadow:0 3px 0 rgba(0,0,0,.65)}
+.nav small{color:var(--txt2);font-size:11px;letter-spacing:3px}
+
+/* 卡片:立体 3D */
+.card{
+  position:relative;background:linear-gradient(180deg,#1B1E27,#14161C 55%,#101218);
+  border:3px solid rgba(255,255,255,.92);border-radius:var(--r-xl);
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.10),0 12px 0 #05070A,14px 18px 0 rgba(0,0,0,.45);
+  padding:18px;margin-bottom:20px;
+}
+/* 胶囊 */
+.pill{display:flex;align-items:center;gap:10px;padding:10px 20px;border-radius:var(--r-pill);margin-bottom:20px;
+  background:linear-gradient(180deg,#1B1E27,#101218);border:3px solid rgba(255,255,255,.92);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.1),0 8px 0 #05070A}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--txt2)}
+.dot.on{background:var(--lime);box-shadow:0 0 0 5px rgba(238,255,0,.12)}
+.pill b{flex:1;font-size:13px}
+.pill em{font-style:normal;color:var(--txt2);font-size:11px;border:1px solid var(--line);border-radius:99px;padding:2px 10px}
+
+/* Zone hero */
+.hero{
+  background:linear-gradient(180deg,var(--violet2) 0%,var(--violet) 50%,#4A21C9 100%);
+  border:3px solid rgba(255,255,255,.92);border-radius:var(--r-xl);
+  box-shadow:inset 0 6px 0 rgba(255,255,255,.22),0 12px 0 var(--violet-side),14px 18px 0 rgba(0,0,0,.4);
+  padding:24px 24px 16px;min-height:210px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:20px}
+.ztag{font-size:13px;font-weight:800;border-radius:99px;padding:5px 18px;letter-spacing:1px}
+.zen{color:rgba(255,255,255,.55);font-size:11px;letter-spacing:4px;margin-left:10px}
+.zrow{display:flex;align-items:baseline;gap:10px;margin:10px 0}
+.zw{font-size:64px;font-weight:800;color:#fff;letter-spacing:-2px;line-height:1;text-shadow:0 4px 0 rgba(0,0,0,.28)}
+.zu{color:rgba(255,255,255,.6);font-size:18px}
+.zp{color:rgba(255,255,255,.6);font-size:13px;margin-left:8px}
+.zband{display:flex;gap:6px;width:100%;margin-top:14px}
+.zseg{flex:1;height:9px;border-radius:99px;opacity:.22;transition:opacity .25s var(--ease)}
+.zseg.on{opacity:1}
+#spark{width:100%;height:56px;margin-top:12px}
+.idle-t{font-size:22px;font-weight:800;color:#fff}
+.idle-d{color:rgba(255,255,255,.65);font-size:13px;text-align:center;line-height:1.8;margin-top:8px}
+.bolt{font-size:44px;margin-bottom:10px}
+
+/* 数据细条 */
+.strip{display:flex;padding:14px 0;margin-bottom:20px}
+.ss{flex:1;display:flex;flex-direction:column;align-items:center;border-right:1px solid var(--line)}
+.ss:last-child{border:none}
+.ss b{font-size:26px;font-weight:800;letter-spacing:-.5px}
+.ss span{font-size:10px;color:var(--txt2);opacity:.6;letter-spacing:2px;margin-top:3px}
+
+/* 时间+环形 */
+.prow{display:flex;align-items:center;gap:26px}
+.ringwrap{position:relative;width:120px;height:120px}
+.ringc{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px}
+.pinfo{display:flex;flex-direction:column;gap:8px}
+.ptime{font-size:44px;font-weight:800;letter-spacing:-1px}
+.pdist{color:var(--txt2);font-size:14px}
+.cbar{margin-top:14px;padding:10px 14px;border-radius:var(--r-lg);background:linear-gradient(180deg,#232733,var(--panel2));
+  border:2px solid rgba(255,255,255,.5);box-shadow:0 5px 0 rgba(0,0,0,.55),inset 0 2px 0 rgba(255,255,255,.08);
+  display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.cbar b{color:var(--lime)}
+
+/* 阻力 3D 圆键 */
+.rrow{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
+.rbtn{
+  width:76px;height:76px;border-radius:50%;
+  background:linear-gradient(180deg,#2C3342,#1B1E26 60%,#14161C);
+  border:3px solid rgba(255,255,255,.92);color:#fff;font-size:38px;font-weight:800;
+  box-shadow:inset 0 4px 0 rgba(255,255,255,.16),0 12px 0 #05070A,0 20px 26px rgba(0,0,0,.4);
+  cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:none;
+  transition:transform .14s var(--pop),box-shadow .14s var(--ease),background .14s var(--ease);
+  display:flex;align-items:center;justify-content:center}
+.rbtn.held,.rbtn:active{
+  transform:translateY(12px) scale(1.04);background:linear-gradient(180deg,var(--violet2),var(--violet) 70%);
+  box-shadow:0 2px 0 #05070A,0 0 64px rgba(238,255,0,.5),0 0 140px rgba(238,255,0,.25)}
+.rcenter{display:flex;align-items:baseline;gap:6px;min-width:120px;justify-content:center}
+.rnum{font-size:64px;font-weight:800;color:var(--lime);letter-spacing:-2px;line-height:1;text-shadow:0 4px 0 rgba(0,0,0,.5)}
+.rof{color:var(--txt2);font-size:16px}
+.rticks{display:flex;gap:5px;margin-top:14px}
+.tick{flex:1;height:9px;border-radius:99px;background:linear-gradient(180deg,#262C38,#171A21);
+  border:1px solid rgba(255,255,255,.3);box-shadow:0 2px 0 rgba(0,0,0,.5);transition:background .15s}
+.tick.on{background:linear-gradient(180deg,#F6FF66,var(--lime) 60%,#D8E600);box-shadow:0 2px 0 var(--lime-side)}
+.rpresets{display:flex;gap:8px;margin-top:12px}
+.rp{flex:1;height:40px;border-radius:14px;background:linear-gradient(180deg,#262C38,#171A21);
+  border:2px solid rgba(255,255,255,.5);box-shadow:0 4px 0 rgba(0,0,0,.5),inset 0 2px 0 rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:15px;cursor:pointer;
+  transition:transform .14s var(--pop),box-shadow .14s var(--ease),background .14s var(--ease)}
+.rp:active{transform:translateY(4px);background:linear-gradient(180deg,var(--violet2),var(--violet));color:#fff;
+  box-shadow:0 1px 0 var(--violet-side);border-color:rgba(255,255,255,.92)}
+.rp.on{background:linear-gradient(180deg,var(--violet2),var(--violet));border-color:rgba(255,255,255,.92);
+  box-shadow:0 4px 0 var(--violet-side),inset 0 2px 0 rgba(255,255,255,.2)}
+
+/* 按钮 */
+.btn{width:100%;height:56px;border-radius:var(--r-lg);font-size:16px;font-weight:800;letter-spacing:6px;
+  color:#fff;border:3px solid rgba(255,255,255,.92);cursor:pointer;
+  background:linear-gradient(180deg,var(--violet2) 0%,var(--violet) 55%,#5426DB 100%);
+  box-shadow:inset 0 4px 0 rgba(255,255,255,.22),0 12px 0 var(--violet-side),0 22px 28px rgba(0,0,0,.4);
+  transition:transform .14s var(--pop),box-shadow .14s var(--ease)}
+.btn.conn{background:linear-gradient(180deg,#FFC94D 0%,#FFB300 55%,#E09E00 100%);color:#1A1A1A;
+  box-shadow:inset 0 4px 0 rgba(255,255,255,.35),0 12px 0 #B37F00,0 22px 28px rgba(0,0,0,.4)}
+.btn.conn:active{transform:translateY(12px);background:#FFB300;
+  box-shadow:inset 0 4px 0 rgba(255,255,255,.15),0 2px 0 #B37F00,0 6px 10px rgba(0,0,0,.4)}
+.hero.off{background:linear-gradient(180deg,#1B1E27,#14161C 55%,#101218);
+  box-shadow:inset 0 6px 0 rgba(255,255,255,.06),0 12px 0 #05070A,14px 18px 0 rgba(0,0,0,.4)}
+.hero.off .bolt{filter:grayscale(1) opacity(.7)}
+.btn:active{transform:translateY(12px);
+  box-shadow:inset 0 4px 0 rgba(255,255,255,.1),0 2px 0 var(--violet-side),0 6px 10px rgba(0,0,0,.4)}
+.btn.ghost{background:var(--panel);color:var(--txt2);box-shadow:0 12px 0 rgba(0,0,0,.6)}
+.btn.ghost:active{transform:translateY(12px);box-shadow:0 2px 0 rgba(0,0,0,.6)}
+.ctrl{display:flex;gap:12px}
+.ctrl .btn{flex:1}
+.ctrl .stop{flex:0 0 120px}
+
+body.noconn .rbtn,body.noconn .rp,body.noconn .rticks,body.noconn .stop{opacity:.4;pointer-events:none}
+body.noconn .rbtn{cursor:not-allowed}
+
+/* 训练 */
+.course{cursor:pointer;transition:transform .14s var(--pop)}
+.course:active{transform:translateY(6px)}
+.course.violet{background:linear-gradient(180deg,var(--violet2) 0%,var(--violet) 50%,#4A21C9 100%)}
+.course.violet h3{color:#fff}.course.violet p{color:rgba(255,255,255,.72)}
+.course.violet .csec{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.5)}
+.course.violet .csec.hot{background:rgba(255,255,255,.24)}
+.course.violet .golime{background:linear-gradient(180deg,#F6FF66,var(--lime) 55%,#D8E600);color:var(--bg);
+  box-shadow:inset 0 4px 0 rgba(255,255,255,.5),0 12px 0 var(--lime-side),0 22px 28px rgba(0,0,0,.35)}
+.course h3{font-size:19px;font-weight:800}
+.ctotal{color:var(--txt2);font-size:12px;letter-spacing:3px}
+.cdesc{color:var(--txt2);font-size:13px;line-height:1.7;margin:8px 0 12px}
+.csecs{display:flex;gap:6px;height:52px}
+.csec{flex:1;border-radius:14px;background:linear-gradient(180deg,#262C38,#171A21);
+  border:2px solid rgba(255,255,255,.4);box-shadow:0 3px 0 rgba(0,0,0,.5),inset 0 2px 0 rgba(255,255,255,.08);
+  display:flex;flex-direction:column;align-items:center;justify-content:center}
+.csec.hot{background:linear-gradient(180deg,var(--violet2),var(--violet));border-color:rgba(255,255,255,.92)}
+.csec b{color:var(--lime);font-size:14px}.csec.hot b{color:#fff}
+.csec i{font-style:normal;color:rgba(255,255,255,.55);font-size:10px}
+.golime{margin-top:10px}
+
+/* 历史列表 */
+.wcard{cursor:pointer;transition:background .15s}
+.wcard:active{background:var(--panel2)}
+.wr{display:flex;justify-content:space-between;align-items:center}
+.wr b{font-size:15px}.wr i{font-style:normal;color:var(--txt2);font-size:12px;display:block;margin-top:4px}
+.wd{text-align:right;font-size:24px;font-weight:800;color:var(--lime)}
+.wu{font-size:10px;color:var(--txt2);display:block}
+.week{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
+.wi{display:flex;flex-direction:column;align-items:center}
+.wi b{font-size:22px;color:var(--lime)}.wi span{font-size:10px;color:var(--txt2);margin-top:3px}
+
+/* 设置 */
+.row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;font-size:14px}
+.row input{width:70px;text-align:center;color:var(--lime);background:var(--panel2);
+  border:1px solid var(--line);border-radius:12px;padding:6px 0;font-weight:700}
+.about{color:var(--txt2);font-size:13px;line-height:1.8}
+
+/* tabBar */
+.tabs{position:fixed;bottom:0;left:0;right:0;display:flex;background:rgba(10,12,16,.92);
+  backdrop-filter:blur(20px);border-top:1px solid var(--line);padding:8px 0 calc(8px + env(safe-area-inset-bottom))}
+.tabs button{flex:1;background:none;border:none;color:var(--txt2);font-size:12px;cursor:pointer;padding:6px 0}
+.tabs button.on{color:var(--lime);font-weight:700}
+.hero,.card,.pill{max-width:100%}
+</style>
+</head>
+<body>
+
+<!-- ============ 运动 ============ -->
+<div class="view on" id="v-dash">
+  <div class="nav"><h1>动力场</h1><small>POWER ZONE · WEB</small></div>
+  <div class="pill"><span class="dot" id="dot"></span><b id="dname">未连接</b><em id="dmode">Web Bluetooth</em></div>
+
+  <div class="hero" id="hero">
+    <div id="heroRun" style="display:none;width:100%;display:flex;flex-direction:column;align-items:center">
+      <div style="display:flex;align-items:center"><span class="ztag" id="ztag">Z1</span><span class="zen" id="zen">RECOVERY</span></div>
+      <div class="zrow"><span class="zw" id="zw">0</span><span class="zu">W</span><span class="zp" id="zp">0% FTP</span></div>
+      <div class="zband" id="zband"></div>
+      <canvas id="spark" height="56"></canvas>
+    </div>
+    <div id="heroIdle" style="display:flex;flex-direction:column;align-items:center">
+      <div class="bolt">⚡</div><div class="idle-t">准备就绪</div>
+      <div class="idle-d">连接机器后点下方开始<br>功率区间将在这里实时点亮</div>
+    </div>
+  </div>
+
+  <div class="strip card" style="padding:14px 0">
+    <div class="ss"><b id="s-speed">—</b><span>KM/H</span></div>
+    <div class="ss"><b id="s-cad">—</b><span>SPM</span></div>
+    <div class="ss"><b id="s-watt">—</b><span>W</span></div>
+    <div class="ss"><b id="s-kcal">—</b><span>KCAL</span></div>
+  </div>
+
+  <div class="card">
+    <div class="prow">
+      <div class="ringwrap"><canvas id="ring" width="120" height="120"></canvas><div class="ringc" id="rpct">0%</div></div>
+      <div class="pinfo"><div class="ptime" id="ptime">00:00</div><div class="pdist" id="pdist">0.00 / 5 KM</div></div>
+    </div>
+    <div class="cbar" id="cbar" style="display:none"><b id="cbn"></b><span id="cbs"></span></div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+      <span style="font-size:11px;color:var(--txt2);letter-spacing:3px">阻力 RESISTANCE</span>
+      <span style="font-size:10px;color:var(--txt2);opacity:.7">每档一顿 · 斜坡下发</span>
+    </div>
+    <div class="rrow">
+      <div class="rbtn" id="rdown">−</div>
+      <div class="rcenter"><span class="rnum" id="rnum">1</span><span class="rof">/ 24</span></div>
+      <div class="rbtn" id="rup">+</div>
+    </div>
+    <div class="rticks" id="rticks"></div>
+    <div class="rpresets">
+      <div class="rp" data-v="6">6</div>
+      <div class="rp" data-v="12">12</div>
+      <div class="rp" data-v="18">18</div>
+      <div class="rp" data-v="24">24</div>
+    </div>
+  </div>
+
+  <div class="ctrl" style="margin-bottom:20px">
+    <button class="btn" id="mainBtn">开始运动</button>
+    <button class="btn ghost stop" id="stopBtn" style="display:none">结束</button>
+  </div>
+</div>
+
+<!-- ============ 训练 ============ -->
+<div class="view" id="v-train">
+  <div class="nav"><h1>训练</h1><small>INTERVAL</small></div>
+  <div class="card"><h3 style="font-size:22px;font-weight:800">间歇训练</h3>
+  <p class="cdesc">按区段自动切换阻力(斜坡下发,与原版 app 同款)。运动中可随时手动接管。</p></div>
+  <div id="courses"></div>
+</div>
+
+<!-- ============ 历史 ============ -->
+<div class="view" id="v-hist">
+  <div class="nav"><h1>记录</h1><small>HISTORY</small></div>
+  <div class="card"><div style="font-size:11px;color:var(--txt2);letter-spacing:4px">最近 7 天</div>
+    <div class="week" id="week"></div></div>
+  <div id="wlist"></div>
+</div>
+
+<!-- ============ 我的 ============ -->
+<div class="view" id="v-me">
+  <div class="nav"><h1>我的</h1><small>SETTINGS</small></div>
+  <div class="card">
+    <div style="font-size:11px;color:var(--txt2);letter-spacing:4px;margin-bottom:10px">功率</div>
+    <div class="row"><span>FTP(阈值功率)</span><span style="display:flex;align-items:center;gap:8px">
+      <input type="number" id="ftpIn"><span style="color:var(--txt2);font-size:12px">W</span></span></div>
+    <div class="row"><span>功率区间</span><span style="color:var(--lime);font-weight:700">Zone 1–7(Coggan)</span></div>
+  </div>
+  <div class="card">
+    <div style="font-size:11px;color:var(--txt2);letter-spacing:4px;margin-bottom:10px">目标</div>
+    <div class="row"><span>单次距离目标</span><span style="display:flex;align-items:center;gap:8px">
+      <input type="number" id="goalIn"><span style="color:var(--txt2);font-size:12px">KM</span></span></div>
+  </div>
+  <div class="card"><div style="font-size:11px;color:var(--txt2);letter-spacing:4px;margin-bottom:10px">关于</div>
+    <div class="about">小莫已倒闭,这台机器由本项目复活。<br>协议:ChangYow 0xAB 帧,实抓验证(docs/PROTOCOL.md)。<br>数据 100% 本地,无任何云端依赖。</div></div>
+</div>
+
+<!-- ============ 详情 ============ -->
+<div class="view" id="v-detail">
+  <div class="nav"><button class="rbtn" style="width:52px;height:52px;font-size:24px;box-shadow:0 8px 0 #05070A" onclick="show('hist')">←</button>
+    <h1 style="font-size:26px">完赛报告</h1><span></span></div>
+  <div class="hero">
+    <span class="ztag" style="background:var(--lime);color:var(--bg)" id="d-badge">本次运动已完成 🎉</span>
+    <div class="zrow"><span class="zw" id="d-dist">0</span><span class="zu">KM</span></div>
+    <div class="week" style="width:100%" id="d-grid"></div>
+  </div>
+  <div class="card"><div style="font-size:11px;color:var(--txt2);letter-spacing:4px;margin-bottom:10px">速度曲线</div>
+    <canvas id="dtrace" height="120" style="width:100%"></canvas></div>
+</div>
+
+<div class="tabs">
+  <button class="on" data-v="dash">⚡ 运动</button>
+  <button data-v="train">🏋 训练</button>
+  <button data-v="hist">📋 历史</button>
+  <button data-v="me">👤 我的</button>
+</div>
+
+<script>
+/* ================= 协议(docs/PROTOCOL.md,实抓验证) ================= */
+const SVC='0000ffe0-0000-1000-8000-00805f9b34fb',
+      CW='0000ffe3-0000-1000-8000-00805f9b34fb',
+      CN='0000ffe4-0000-1000-8000-00805f9b34fb';
+const MAXR=24, INT2KMH=0.01;
+
+function parseStatus(b){
+  if(!b||b.length<15||b[0]!==0xAB)return null;
+  const u=i=>b[i]&0xFF;
+  const intensity=((b[7]<<24)|(b[8]<<16)|(b[9]<<8)|u(10))>>>0;
+  const speed=+(intensity*INT2KMH).toFixed(1);
+  return {intensity,speed,cadence:Math.round(speed*6),resistance:u(13)};
+}
+function buildResistance(lv){lv=Math.max(1,Math.min(MAXR,Math.round(lv)));return new Uint8Array([0xAB,3,0,0x0B,0x13,lv,1]);}
+
+const ZONES=[
+  {id:1,n:'恢复',en:'RECOVERY',min:0,max:55,c:'#9CA3AF'},
+  {id:2,n:'耐力',en:'ENDURANCE',min:56,max:75,c:'#3B82F6'},
+  {id:3,n:'节奏',en:'TEMPO',min:76,max:90,c:'#22C55E'},
+  {id:4,n:'阈值',en:'THRESHOLD',min:91,max:105,c:'#EEFF00'},
+  {id:5,n:'最大摄氧',en:'VO2 MAX',min:106,max:120,c:'#F97316'},
+  {id:6,n:'无氧',en:'ANAEROBIC',min:121,max:150,c:'#EF4444'},
+  {id:7,n:'神经肌肉',en:'NEUROMUSCULAR',min:151,max:9999,c:'#B91C1C'}];
+const zoneFor=(w,ftp)=>ZONES.find(z=>w/ftp*100>=z.min&&w/ftp*100<=z.max)||ZONES[0];
+
+const estWatts=(spd,res)=>Math.round(8+spd*3.5*(0.5+res/24));
+const fmt=s=>`${String(Math.floor(Math.max(0,s)/60)).padStart(2,'0')}:${String(Math.floor(Math.max(0,s))%60).padStart(2,'0')}`;
+const vib=ms=>navigator.vibrate&&navigator.vibrate(ms);
+
+/* ================= 蓝牙 + 会话 ================= */
+let writeChar=null,dev=null;
+const S={state:'idle',elapsed:0,dist:0,kcal:0,watts:0,maxSpeed:0,
+  spSum:0,spN:0,cadSum:0,resSum:0,resN:0,wSum:0,wN:0,trace:[],last:null,_t:0,res:1,
+  ftp:+localStorage.xm_ftp||150,goal:+localStorage.xm_goal||5};
+
+async function connect(){
+  try{
+    dev=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'MOBI'},{namePrefix:'mobi'}],optionalServices:[SVC]});
+    const srv=await dev.gatt.connect();
+    const svc=await srv.getPrimaryService(SVC);
+    writeChar=await svc.getCharacteristic(CW);
+    const nc=await svc.getCharacteristic(CN);
+    await nc.startNotifications();
+    nc.addEventListener('characteristicvaluechanged',onFrame);
+    dev.addEventListener('gattserverdisconnected',()=>{writeChar=null;document.getElementById('dot').classList.remove('on');document.getElementById('dname').textContent='未连接';});
+    document.getElementById('dot').classList.add('on');
+    document.getElementById('dname').textContent=dev.name;
+  }catch(e){alert('连接失败:'+e.message)}
+}
+async function send(bytes){
+  if(!writeChar)return;
+  await writeChar.writeValueWithoutResponse(new Uint8Array(bytes).buffer).catch(()=>{});
+}
+/* 斜坡下发:与原版 app 同款(150ms 逐档) */
+let rampT=null,rampTarget=null;
+function setRes(t){
+  if(!writeChar){toast('请先连接机器(点「连接机器」)');return}
+  t=Math.max(1,Math.min(MAXR,Math.round(t)));
+  clearTimeout(rampT);
+  if(t===S.res){drawRes();return}
+  rampTarget=t;
+  const dir=t>S.res?1:-1;
+  const tick=()=>{
+    if(!writeChar||S.res===rampTarget)return drawRes();
+    S.res+=dir;writeValue(buildResistance(S.res));
+    vib(30);drawRes();
+    if(S.res!==rampTarget)rampT=setTimeout(tick,150);
+  };tick();
+}
+async function writeValue(arr){try{await writeChar.writeValueWithoutResponse(new Uint8Array(arr).buffer)}catch(e){}}
+
+function onFrame(e){
+  if(S.state!=='running')return;
+  const st=parseStatus(new Uint8Array(e.target.value.buffer));
+  if(!st)return;
+  const now=Date.now(),dt=S._t?Math.min(2,(now-S._t)/1000):0.5;S._t=now;
+  const w=estWatts(st.speed,st.resistance);
+  S.last=st;S.watts=w;S.dist+=st.speed/3600*dt;S.kcal+=w*dt/3600*0.86;
+  S.maxSpeed=Math.max(S.maxSpeed,st.speed);S.spSum+=st.speed;S.spN++;S.cadSum+=st.cadence;
+  S.wSum+=w;S.wN++;if(st.resistance>0){S.resSum+=st.resistance;S.resN++}
+  S.trace.push(st.speed);if(S.trace.length>600)S.trace.shift();
+  if(st.resistance!==S.res){S.res=st.resistance;drawRes()} // 机器回报同步
+}
+
+/* ================= 课程引擎 ================= */
+const COURSES=[
+  {id:'fb',name:'燃脂入门',total:20,violet:true,desc:'中低强度交替,脂肪供能效率最高区间,适合热身与恢复日。',rounds:4,sections:[{min:3,r:4},{min:2,r:6}]},
+  {id:'hc',name:'爬坡挑战',total:15,desc:'模拟连续爬坡,大腿与臀部肌群主力训练,阻力峰值 L10。',rounds:5,sections:[{min:2,r:6},{min:1,r:10}]},
+  {id:'sp',name:'冲刺间歇',total:12,desc:'高强度冲刺 + 短恢复,提升心肺与最大摄氧量,进阶者专属。',rounds:8,sections:[{min:1,r:4},{min:.5,r:12}]}];
+let eng=null;
+function startCourse(c){
+  if(eng)clearInterval(eng.t);
+  const total=c.sections.reduce((a,s)=>a+s.min*60,0);
+  eng={c,round:1,si:0,left:c.sections[0].min*60,total:total*c.rounds,t:null};
+  setRes(c.sections[0].r);drawCourse();
+  eng.t=setInterval(()=>{
+    eng.left--;
+    if(eng.left<=0){
+      eng.si++;if(eng.si>=c.sections.length){eng.si=0;eng.round++;
+        if(eng.round>c.rounds){clearInterval(eng.t);eng=null;document.getElementById('cbar').style.display='none';
+          toast('课程完成 🎉');return}}
+      const s=c.sections[eng.si];eng.left=s.min*60;setRes(s.r);
+    }
+    drawCourse();
+  },1000);
+}
+function drawCourse(){
+  const el=document.getElementById('cbar');if(!eng){el.style.display='none';return}
+  el.style.display='flex';
+  const s=eng.c.sections[eng.si];
+  document.getElementById('cbn').textContent=`${eng.c.name} · 第${eng.round}/${eng.c.rounds}轮`;
+  document.getElementById('cbs').textContent=`阻力 ${s.r} · 剩余 ${fmt(eng.left)}`;
+}
+
+/* ================= 渲染 ================= */
+const $=id=>document.getElementById(id);
+function render(){
+  const run=S.state==='running';
+  const conn=!!writeChar;
+  document.body.classList.toggle('noconn',!conn);
+  $('heroRun').style.display=run?'flex':'none';
+  $('heroIdle').style.display=run?'none':'flex';
+  const w=run?S.watts:0,z=zoneFor(Math.max(w,1),S.ftp),pct=Math.round(w/S.ftp*100);
+  $('ztag').textContent=`Z${z.id} ${z.n}`;$('ztag').style.background=z.c;
+  $('ztag').style.color=z.id===4?'#0A0C10':'#fff';$('zen').textContent=z.en;
+  $('zw').textContent=w;$('zp').textContent=pct+'% FTP';
+  document.querySelectorAll('.zseg').forEach((el,i)=>el.classList.toggle('on',z.id>=i+1));
+  $('s-speed').textContent=run&&S.last?S.last.speed.toFixed(1):'—';
+  $('s-cad').textContent=run&&S.last?S.last.cadence:'—';
+  $('s-watt').textContent=run?w:'—';
+  $('s-kcal').textContent=run?Math.round(S.kcal):'—';
+  $('ptime').textContent=fmt(S.elapsed);
+  $('pdist').textContent=`${S.dist.toFixed(2)} / ${S.goal} KM`;
+  $('rpct').textContent=Math.min(100,Math.round(S.dist/S.goal*100))+'%';
+  drawRing(z.color,Math.min(1,S.dist/S.goal));
+  $('mainBtn').textContent=!conn?'连接机器':S.state==='running'?'暂 停':S.state==='paused'?'继 续':'开始运动';
+  $('mainBtn').classList.toggle('conn',!conn);
+  $('hero').classList.toggle('off',!conn);
+  $('stopBtn').style.display=S.state!=='idle'?'':'none';
+  if(run)drawSpark();
+}
+function drawSpark(){
+  const c=$('spark');if(!c.width)return;
+  const ctx=c.getContext('2d');const w=c.clientWidth||300;c.width=w;c.height=56;
+  ctx.clearRect(0,0,w,56);const p=S.trace.slice(-60);if(p.length<2)return;
+  const mx=Math.max(...p,5)*1.1,st=w/59,x0=w-(p.length-1)*st;
+  ctx.beginPath();p.forEach((v,i)=>{const x=x0+i*st,y=56-(v/mx)*48-4;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});
+  ctx.strokeStyle='rgba(255,255,255,.92)';ctx.lineWidth=2;ctx.stroke();
+  ctx.lineTo(x0+(p.length-1)*st,56);ctx.lineTo(x0,56);ctx.closePath();
+  const g=ctx.createLinearGradient(0,0,0,56);g.addColorStop(0,'rgba(255,255,255,.18)');g.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=g;ctx.fill();
+}
+function drawRing(color,pt){
+  const c=$('ring'),ctx=c.getContext('2d');ctx.clearRect(0,0,120,120);
+  ctx.lineWidth=12;ctx.lineCap='round';
+  ctx.strokeStyle='#1B1E26';ctx.beginPath();ctx.arc(60,60,50,0,Math.PI*2);ctx.stroke();
+  if(pt>0){ctx.strokeStyle=color;ctx.beginPath();ctx.arc(60,60,50,-Math.PI/2,-Math.PI/2+Math.PI*2*pt);ctx.stroke()}
+}
+function drawRes(){
+  $('rnum').textContent=S.res;
+  document.querySelectorAll('#rticks .tick').forEach((el,i)=>el.classList.toggle('on',S.res>=i+1));
+  document.querySelectorAll('.rp').forEach(el=>el.classList.toggle('on',S.res===+el.dataset.v));
+}
+
+/* ================= 控制 ================= */
+$('mainBtn').onclick=()=>{
+  if(!writeChar){connect();return}  // 未连接 → 点这里直接触发连接流程
+  if(S.state==='idle'){resetS();S.state='running';S._t=Date.now()}
+  else if(S.state==='running')S.state='paused';
+  else S.state='running';
+  render();
+};
+$('stopBtn').onclick=()=>{
+  S.state='idle';if(eng){clearInterval(eng.t);eng=null;$('cbar').style.display='none'}
+  if(S.elapsed>5){
+    const rec={ts:Date.now(),durationSec:S.elapsed,distanceKm:+S.dist.toFixed(2),kcal:Math.round(S.kcal),
+      avgSpeed:+(S.spN?S.spSum/S.spN:0).toFixed(1),maxSpeed:+S.maxSpeed.toFixed(1),
+      avgCadence:Math.round(S.spN?S.cadSum/S.spN:0),avgWatts:S.wN?Math.round(S.wSum/S.wN):0,
+      trace:S.trace.slice(-60)};
+    const ws=JSON.parse(localStorage.xm_web_workouts||'[]');ws.unshift(rec);
+    localStorage.xm_web_workouts=JSON.stringify(ws.slice(0,200));
+    resetS();showDetail(rec,true);return;
+  }
+  toast('运动太短,未保存');resetS();render();
+};
+function resetS(){Object.assign(S,{state:'idle',elapsed:0,dist:0,kcal:0,watts:0,maxSpeed:0,spSum:0,spN:0,cadSum:0,resSum:0,resN:0,wSum:0,wN:0,trace:[],last:null,_t:0});S.res=S.res}
+setInterval(()=>{if(S.state==='running')S.elapsed++;render();},500);
+
+/* 阻力:按住点亮 + 双段震动 + 斜坡 */
+function hold(el,dir){
+  el.addEventListener('pointerdown',()=>{el.classList.add('held');vib(30);
+    setRes(S.res+dir);});
+  ['pointerup','pointerleave','pointercancel'].forEach(ev=>el.addEventListener(ev,()=>el.classList.remove('held')));
+}
+hold($('rup'),1);hold($('rdown'),-1);
+const rt=$('rticks');for(let i=1;i<=MAXR;i++){const d=document.createElement('div');d.className='tick';rt.appendChild(d)}
+$('rdown').onclick=()=>setRes(S.res-1);
+$('rup').onclick=()=>setRes(S.res+1);
+document.querySelectorAll('.rp').forEach(el=>el.onclick=()=>setRes(+el.dataset.v));
+
+/* ================= 训练页 ================= */
+function drawCourses(){
+  $('courses').innerHTML=COURSES.map(c=>`<div class="card course ${c.violet?'violet':''}" data-id="${c.id}">
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><h3>${c.name}</h3><span class="ctotal">${c.total} MIN</span></div>
+    <p class="cdesc">${c.desc}</p>
+    <div class="csecs">${c.sections.map(s=>`<div class="csec ${s.r>=8?'hot':''}" style="flex:${s.min}"><b>L${s.r}</b><i>${s.min}min</i></div>`).join('')}</div>
+    <button class="btn golime">开始课程</button></div>`).join('');
+  document.querySelectorAll('.course').forEach(el=>el.onclick=()=>{
+    const c=COURSES.find(x=>x.id===el.dataset.id);
+    show('dash');setTimeout(()=>startCourse(c),300);
+  });
+}
+drawCourses();
+
+/* ================= 历史 ================= */
+function drawHist(){
+  const ws=JSON.parse(localStorage.xm_web_workouts||'[]');
+  const weekAgo=Date.now()-7*864e5;const wk=ws.filter(w=>w.ts>=weekAgo);
+  $('week').innerHTML=[['次',wk.length],['KM',wk.reduce((a,w)=>a+w.distanceKm,0).toFixed(1)],['千卡',wk.reduce((a,w)=>a+w.kcal,0)],['分',Math.round(wk.reduce((a,w)=>a+w.durationSec,0)/60)]]
+    .map(([l,v])=>`<div class="wi"><b>${v}</b><span>${l}</span></div>`).join('');
+  $('wlist').innerHTML=ws.length?ws.map((w,i)=>`<div class="card wcard" data-i="${i}">
+    <div class="wr"><div><b>${new Date(w.ts).getMonth()+1}月${new Date(w.ts).getDate()}日</b>
+    <i>${fmt(w.durationSec)} · 均速 ${w.avgSpeed} · 均 ${w.avgWatts}W</i></div>
+    <div class="wd">${w.distanceKm}<span class="wu">KM · ${w.kcal} 千卡</span></div></div></div>`).join('')
+    :'<div class="card" style="text-align:center;padding:60px 0;color:var(--txt2)">⚡ 还没有运动记录<br>去「运动」页开始第一次吧</div>';
+  document.querySelectorAll('.wcard').forEach(el=>el.onclick=()=>showDetail(ws[+el.dataset.i],false));
+}
+function showDetail(w,just){
+  show('detail');
+  $('d-badge').style.display=just?'':'none';
+  $('d-dist').textContent=w.distanceKm.toFixed?sprintf(w.distanceKm):w.distanceKm;
+  $('d-grid').innerHTML=[[fmt(w.durationSec),'时长'],[w.kcal,'千卡'],[w.avgWatts||0,'均功率 W'],
+    [w.avgSpeed,'均速 KM/H'],[w.maxSpeed,'峰值'],[w.avgCadence,'均步频 SPM']]
+    .map(([v,l])=>`<div class="wi"><b style="color:#fff">${v}</b><span>${l}</span></div>`).join('');
+  setTimeout(()=>{
+    const c=$('dtrace');const w2=c.clientWidth||300;c.width=w2;c.height=120;
+    const ctx=c.getContext('2d');const p=w.trace||[];if(p.length<2)return;
+    const mx=Math.max(...p,5)*1.1,st=w2/(p.length-1);
+    ctx.beginPath();p.forEach((v,i)=>{const x=i*st,y=120-(v/mx)*100-8;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});
+    ctx.strokeStyle='#EEFF00';ctx.lineWidth=2.5;ctx.stroke();
+  },50);
+}
+const sprintf=v=>(+v).toFixed(2);
+
+/* ================= 我的 ================= */
+$('ftpIn').value=S.ftp;$('goalIn').value=S.goal;
+$('ftpIn').onchange=e=>{S.ftp=Math.max(50,Math.min(500,+e.target.value||150));localStorage.xm_ftp=S.ftp};
+$('goalIn').onchange=e=>{S.goal=Math.max(.5,+e.target.value||5);localStorage.xm_goal=S.goal};
+
+/* ================= 视图切换 ================= */
+function show(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
+  $('v-'+v).classList.add('on');
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  if(v==='hist')drawHist();
+  if(v==='dash')render();
+}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+
+function toast(m){const t=document.createElement('div');t.textContent=m;
+  t.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--lime);color:#0A0C10;padding:10px 24px;border-radius:99px;font-weight:700;z-index:99';
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
+
+/* 初始化:zband 7 段 */
+$('zband').innerHTML=ZONES.map(z=>`<div class="zseg" style="background:${z.c}"></div>`).join('');
+drawRes();render();
+</script>
+</body>
+</html>

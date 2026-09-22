@@ -1,0 +1,76 @@
+<view class="page">
+  <view class="nav" style="padding-top: {{statusBarHeight + 8}}px">
+    <text class="nav-title">记录</text>
+    <text class="nav-sub">HISTORY</text>
+  </view>
+
+  <!-- 分段:明细 / 日报 / 月报 -->
+  <view class="seg">
+    <view class="seg-i {{seg === 'detail' ? 'seg-on' : ''}}" bindtap="setSeg" data-s="detail">明细</view>
+    <view class="seg-i {{seg === 'daily' ? 'seg-on' : ''}}" bindtap="setSeg" data-s="daily">日报</view>
+    <view class="seg-i {{seg === 'monthly' ? 'seg-on' : ''}}" bindtap="setSeg" data-s="monthly">月报</view>
+  </view>
+
+  <!-- 明细 -->
+  <block wx:if="{{seg === 'detail'}}">
+    <view class="week hud-panel">
+      <view class="sec-t">最近 7 天</view>
+      <view class="week-grid">
+        <view class="week-item"><text class="v mono glow">{{week.count}}</text><text class="l">次运动</text></view>
+        <view class="week-item"><text class="v mono glow">{{week.distanceKm}}</text><text class="l">公里</text></view>
+        <view class="week-item"><text class="v mono glow">{{week.kcal}}</text><text class="l">千卡</text></view>
+        <view class="week-item"><text class="v mono glow">{{week.min}}</text><text class="l">分钟</text></view>
+      </view>
+    </view>
+
+    <view class="empty" wx:if="{{list.length === 0}}">
+      <text class="empty-icon">⚡</text>
+      <text class="empty-text">还没有运动记录\n去「运动」页开始第一次吧</text>
+    </view>
+
+    <view class="item hud-panel" wx:for="{{list}}" wx:key="id" bindtap="openDetail" data-id="{{item.id}}">
+      <view class="item-left">
+        <text class="item-date">{{item.dateText}}</text>
+        <text class="item-sub mono">{{item.durationText}} · 均速 {{item.avgSpeed}} · {{item.avgWatts}}W</text>
+      </view>
+      <view class="item-right">
+        <text class="item-dist mono glow">{{item.distanceKm}}</text>
+        <text class="item-unit">KM · {{item.kcal}} 千卡</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- 日报 -->
+  <block wx:if="{{seg === 'daily'}}">
+    <view class="empty" wx:if="{{daily.length === 0}}">
+      <text class="empty-text">暂无日报数据</text>
+    </view>
+    <view class="item hud-panel" wx:for="{{daily}}" wx:key="key">
+      <view class="item-left">
+        <text class="item-date">{{item.key}}</text>
+        <text class="item-sub mono">{{item.count}} 次 · {{item.dur}} 分钟 · 均 {{item.avgW}}W</text>
+      </view>
+      <view class="item-right">
+        <text class="item-dist mono glow">{{item.dist}}</text>
+        <text class="item-unit">KM · {{item.kcal}} 千卡</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- 月报 -->
+  <block wx:if="{{seg === 'monthly'}}">
+    <view class="empty" wx:if="{{monthly.length === 0}}">
+      <text class="empty-text">暂无月报数据</text>
+    </view>
+    <view class="item hud-panel" wx:for="{{monthly}}" wx:key="key">
+      <view class="item-left">
+        <text class="item-date">{{item.key}}</text>
+        <text class="item-sub mono">{{item.count}} 次 · {{item.activeDays}} 天活跃 · {{item.dur}} 分钟</text>
+      </view>
+      <view class="item-right">
+        <text class="item-dist mono glow">{{item.dist}}</text>
+        <text class="item-unit">KM · {{item.kcal}} 千卡</text>
+      </view>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,6 @@
+captures/
+references/
+*.tar.gz
+*.pklg
+node_modules/
+.DS_Store

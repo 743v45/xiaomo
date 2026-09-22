@@ -1,0 +1,25 @@
+<view class="page">
+  <view class="nav" style="padding-top: {{statusBarHeight + 8}}px">
+    <view class="nav-back" bindtap="goBack">←</view>
+    <text class="nav-title nav-title-sm">蓝牙操作日志</text>
+    <text class="nav-clear" bindtap="clearAll">清空</text>
+  </view>
+
+  <view class="empty" wx:if="{{list.length === 0}}">
+    <text class="empty-icon">📡</text>
+    <text class="empty-text">暂无操作记录\n连接、调阻、开始/结束都会记录在这里</text>
+  </view>
+
+  <view class="card hud-panel" wx:if="{{list.length}}">
+    <view class="op-row" wx:for="{{list}}" wx:key="index">
+      <text class="op-icon">{{item.icon}}</text>
+      <view class="op-main">
+        <text class="op-label">{{item.label}}</text>
+        <text class="op-detail" wx:if="{{item.detail}}">{{item.detail}}</text>
+      </view>
+      <text class="op-time mono">{{item.timeText}}</text>
+    </view>
+  </view>
+
+  <view class="op-foot" wx:if="{{list.length}}">共 {{list.length}} 条 · 仅存本机,上限 500 条</view>
+</view>

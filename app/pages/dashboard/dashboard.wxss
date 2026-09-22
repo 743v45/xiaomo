@@ -1,0 +1,218 @@
+.page {
+  min-height: 100vh;
+  padding: var(--sp-3) var(--sp-4) calc(var(--sp-6) + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+/* 状态胶囊:小号玻璃配方(blur14 + saturate1.15) */
+.conn-bar {
+  display: flex; align-items: center;
+  padding: 20rpx 28rpx;
+  border-radius: var(--r-pill);
+  backdrop-filter: blur(28rpx) saturate(1.15);
+  -webkit-backdrop-filter: blur(28rpx) saturate(1.15);
+}
+.dot {
+  width: 14rpx; height: 14rpx; border-radius: 50%;
+  background: var(--txt-2); margin-right: var(--sp-2);
+  transition: background-color var(--dur-fast) var(--ease);
+}
+.dot-on { background: var(--lime); box-shadow: 0 0 0 8rpx var(--lime-ring); }
+.conn-name { color: var(--txt); flex: 1; font-weight: 600; font-size: var(--fs-caption); }
+.conn-mode {
+  color: var(--txt-2); font-size: var(--fs-micro);
+  border: 1rpx solid var(--line); border-radius: var(--r-pill);
+  padding: 4rpx 18rpx; letter-spacing: 2rpx;
+}
+
+/* ============ Zone 主视觉:立体紫面(纵切渐变 + 白描边 + 侧壁厚边 + 顶受光) ============ */
+/* 未连接:整块转灰,提示"待办" */
+.zone-hero.hero-off {
+  background: linear-gradient(180deg, #1B1E27 0%, #14161C 55%, #101218 100%);
+  box-shadow:
+    inset 0 6rpx 0 rgba(255, 255, 255, 0.06),
+    0 12rpx 0 #05070A,
+    14rpx 18rpx 0 rgba(0, 0, 0, 0.4);
+}
+.zone-hero.hero-off .idle-bolt { filter: grayscale(1) opacity(.7); }
+.zone-hero {
+  background: linear-gradient(180deg, var(--violet-2) 0%, var(--violet) 50%, #4A21C9 100%);
+  border: 3rpx solid rgba(255, 255, 255, 0.92);
+  border-radius: var(--r-xl);
+  box-shadow:
+    inset 0 6rpx 0 rgba(255, 255, 255, 0.22),
+    0 12rpx 0 var(--violet-side),
+    14rpx 18rpx 0 rgba(0, 0, 0, 0.4);
+  padding: var(--sp-5) var(--sp-5) var(--sp-3);
+  display: flex; flex-direction: column; align-items: center;
+  min-height: 420rpx;
+  justify-content: center;
+}
+.zone-top {
+  display: flex; align-items: center; gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+.zone-tag {
+  font-size: var(--fs-caption); font-weight: 800;
+  border-radius: var(--r-pill); padding: 8rpx 28rpx;
+  letter-spacing: 2rpx;
+}
+.zone-en { color: rgba(255, 255, 255, 0.55); font-size: var(--fs-label); letter-spacing: 6rpx; }
+.zone-watts { display: flex; align-items: baseline; gap: 14rpx; }
+.watts-num { font-size: var(--fs-hero); line-height: 1; color: #FFFFFF; letter-spacing: -4rpx; text-shadow: 0 6rpx 0 rgba(0, 0, 0, 0.28); }
+.watts-unit { color: rgba(255, 255, 255, 0.6); font-size: var(--fs-title); }
+.zone-pct { color: rgba(255, 255, 255, 0.6); font-size: var(--fs-caption); margin-left: var(--sp-2); }
+.zone-band { display: flex; gap: 8rpx; width: 100%; margin-top: var(--sp-4); }
+.zseg {
+  flex: 1; height: 12rpx; border-radius: var(--r-pill);
+  opacity: .22; transition: opacity var(--dur-mid) var(--ease);
+}
+.zseg-on { opacity: 1; }
+.spark { width: 100%; height: 100rpx; margin-top: var(--sp-3); }
+
+/* 空态 */
+.idle-bolt { font-size: 88rpx; margin-bottom: var(--sp-3); }
+.idle-title { font-size: var(--fs-h2); font-weight: 800; color: #FFFFFF; letter-spacing: -1rpx; }
+.idle-desc {
+  color: rgba(255, 255, 255, 0.65); font-size: var(--fs-caption);
+  text-align: center; line-height: 1.8; margin-top: var(--sp-2);
+}
+
+/* ============ 数据细条:1×4,单位降权 ============ */
+.stat-strip {
+  display: flex;
+  padding: var(--sp-3) 0;
+  border-radius: var(--r-xl);
+}
+.ss {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  border-right: 1rpx solid var(--line);
+}
+.ss:last-child { border-right: none; }
+.ss-v { font-size: 44rpx; color: var(--ink); letter-spacing: -1rpx; line-height: 1.1; }
+.ss-v.v-hot { color: var(--red); }
+.ss-u { font-size: var(--fs-micro); color: var(--txt-2); opacity: .6; letter-spacing: 2rpx; margin-top: 6rpx; }
+
+/* ============ 时间 + 环形进度 ============ */
+.prog-panel { padding: var(--sp-4); border-radius: var(--r-xl); }
+.prog-row { display: flex; align-items: center; gap: var(--sp-5); }
+.ring-wrap { position: relative; width: 176rpx; height: 176rpx; }
+.ring { width: 176rpx; height: 176rpx; }
+.ring-center {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--fs-title); color: var(--ink);
+}
+.prog-info { display: flex; flex-direction: column; gap: var(--sp-2); }
+.time { font-size: var(--fs-h1); color: var(--ink); letter-spacing: -2rpx; }
+.dist { font-size: var(--fs-caption); color: var(--txt-2); }
+
+/* 课程运行条:立体小胶囊 */
+.course-bar {
+  margin-top: var(--sp-3); padding: 18rpx 22rpx;
+  border: 2rpx solid rgba(255, 255, 255, 0.5); border-radius: var(--r-lg);
+  background: linear-gradient(180deg, #232733, var(--panel-2));
+  box-shadow: 0 6rpx 0 rgba(0, 0, 0, 0.55), inset 0 2rpx 0 rgba(255, 255, 255, 0.08);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.course-name { font-size: var(--fs-caption); color: var(--lime); font-weight: 700; }
+.course-sec { font-size: var(--fs-caption); color: var(--txt-2); font-variant-numeric: tabular-nums; }
+
+/* ============ 阻力:卡通加减大按键(3D 压键 + 双段震动),中央齿轮衬底 ============ */
+.res-pad { padding: var(--sp-4); border-radius: var(--r-xl); }
+.res-dis { opacity: .45; }
+.wheel-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: var(--sp-2);
+}
+.res-label { color: var(--txt-2); font-size: var(--fs-label); letter-spacing: 4rpx; }
+.wheel-hint { color: var(--txt-2); font-size: var(--fs-micro); opacity: .7; }
+.res-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--sp-1) 0;
+}
+.res-big {
+  width: 148rpx; height: 148rpx; border-radius: 50%;
+  background: linear-gradient(180deg, #2C3342 0%, #1B1E26 60%, #14161C 100%);
+  border: 3rpx solid rgba(255, 255, 255, 0.92);
+  box-shadow:
+    inset 0 5rpx 0 rgba(255, 255, 255, 0.16),
+    0 12rpx 0 #05070A,
+    0 20rpx 26rpx rgba(0, 0, 0, 0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 72rpx; font-weight: 800; color: var(--ink);
+  transition: transform 140ms var(--ease-pop), box-shadow 140ms var(--ease), background-color 140ms var(--ease);
+}
+.res-big:active {
+  transform: translateY(12rpx);
+  box-shadow:
+    inset 0 5rpx 0 rgba(255, 255, 255, 0.08),
+    0 2rpx 0 #05070A,
+    0 6rpx 10rpx rgba(0, 0, 0, 0.4);
+  background: linear-gradient(180deg, var(--violet-2), var(--violet) 70%); color: #FFFFFF;
+}
+/* 手指按住:即时点亮(touchstart 驱动)——下沉到底 + lime 光晕,位置可见 */
+.res-big-pressed {
+  transform: translateY(12rpx) scale(1.04);
+  background: linear-gradient(180deg, var(--violet-2), var(--violet) 70%);
+  color: #FFFFFF;
+  box-shadow:
+    0 2rpx 0 #05070A,
+    0 0 64rpx rgba(238, 255, 0, 0.5),
+    0 0 140rpx rgba(238, 255, 0, 0.25);
+}
+.res-center {
+  display: flex; align-items: baseline; justify-content: center;
+  gap: 12rpx; min-width: 220rpx;
+}
+.res-num { font-size: 128rpx; color: var(--lime); letter-spacing: -4rpx; line-height: 1; text-shadow: 0 6rpx 0 rgba(0, 0, 0, 0.5); }
+.res-of { color: var(--txt-2); font-size: var(--fs-title); }
+.wheel-ticks { display: flex; gap: 10rpx; margin-top: var(--sp-3); }
+.tick {
+  flex: 1; height: 14rpx; border-radius: var(--r-pill);
+  background: linear-gradient(180deg, #262C38, #171A21);
+  border: 1rpx solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 3rpx 0 rgba(0, 0, 0, 0.5);
+  transition: background-color var(--dur-fast) var(--ease);
+}
+.tick-on {
+  background: linear-gradient(180deg, #F6FF66, var(--lime) 60%, #D8E600);
+  box-shadow: 0 3rpx 0 var(--lime-side);
+}
+
+/* 主控按钮:flex 居中(微信 button 默认样式已清) */
+.ctrl-row { display: flex; gap: var(--sp-2); margin-top: auto; }
+.ctrl-main {
+  flex: 1;
+  height: 96rpx;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0; margin: 0; line-height: 1;
+  letter-spacing: 12rpx; text-indent: 12rpx;
+}
+.ctrl-stop {
+  width: 200rpx;
+  height: 96rpx;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0; margin: 0; line-height: 1;
+}
+
+/* 未连接:琥珀色"待办"按键(主按钮),区别于已连接的紫色操作态 */
+.ctrl-main.btn-conn {
+  background: linear-gradient(180deg, #FFC94D 0%, #FFB300 55%, #E09E00 100%);
+  color: #1A1A1A;
+  box-shadow:
+    inset 0 4rpx 0 rgba(255, 255, 255, 0.35),
+    0 12rpx 0 #B37F00,
+    0 22rpx 28rpx rgba(0, 0, 0, 0.4);
+}
+.ctrl-main.btn-conn:active {
+  transform: translateY(12rpx);
+  background: #FFB300;
+  box-shadow:
+    inset 0 4rpx 0 rgba(255, 255, 255, 0.15),
+    0 2rpx 0 #B37F00,
+    0 6rpx 10rpx rgba(0, 0, 0, 0.4);
+}

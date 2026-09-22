@@ -1,0 +1,11 @@
+// 全局配置
+module.exports = {
+  // false = 真机 BLE(2026-09-22 协议已实抓验证,默认走真机)
+  // true  = 虚拟小莫(调试 UI 用,无需真机)
+  USE_MOCK: false,
+
+  DEVICE_NAME_PREFIX: 'MOBI',
+  SERVICE_UUID: '0000FFE0-0000-1000-8000-00805F9B34FB',
+  CHAR_WRITE: '0000FFE3-0000-1000-8000-00805F9B34FB',
+  CHAR_NOTIFY: '0000FFE4-0000-1000-8000-00805F9B34FB',
+}

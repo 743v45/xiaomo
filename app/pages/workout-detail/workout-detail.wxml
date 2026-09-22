@@ -1,0 +1,28 @@
+<view class="page">
+  <view class="nav" style="padding-top: {{statusBarHeight + 8}}px">
+    <view class="nav-back" bindtap="goBack">←</view>
+    <text class="nav-title nav-title-sm">完赛报告</text>
+    <view class="nav-back nav-back-ghost"></view>
+  </view>
+
+  <view class="hero hud-panel">
+    <text class="just-badge" wx:if="{{just}}">本次运动已完成 🎉</text>
+    <text class="date">{{dateText}}</text>
+    <view class="hero-dist"><text class="d mono glow">{{distanceKm}}</text><text class="u">KM</text></view>
+    <view class="hero-grid">
+      <view class="hg"><text class="v mono">{{durationText}}</text><text class="l">时长</text></view>
+      <view class="hg"><text class="v mono">{{kcal}}</text><text class="l">千卡</text></view>
+      <view class="hg"><text class="v mono">{{avgWatts}}</text><text class="l">均功率 W</text></view>
+    </view>
+    <view class="hero-grid">
+      <view class="hg"><text class="v mono">{{avgSpeed}}</text><text class="l">均速 KM/H</text></view>
+      <view class="hg"><text class="v mono">{{maxSpeed}}</text><text class="l">峰值 KM/H</text></view>
+      <view class="hg"><text class="v mono">{{avgCadence}}</text><text class="l">均步频 SPM</text></view>
+    </view>
+  </view>
+
+  <view class="chart hud-panel">
+    <view class="chart-title">速度曲线</view>
+    <canvas type="2d" id="trace" class="trace"></canvas>
+  </view>
+</view>

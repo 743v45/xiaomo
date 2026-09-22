@@ -1,0 +1,162 @@
+/* ============================================================
+   VOLT NOIR 设计 token(design.md 为唯一事实源,此处只做映射)
+   ============================================================ */
+page {
+  /* —— 1. 色彩 —— */
+  --bg: #0A0C10;
+  --panel: #14161C;
+  --panel-2: #1B1E26;
+  --ink: #FFFFFF;
+  --txt: #EDEFF2;
+  --txt-2: #8A8F98;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.12);
+  --lime: #EEFF00;
+  --lime-soft: rgba(238, 255, 0, 0.35);
+  --lime-ring: rgba(238, 255, 0, 0.08);
+  --violet: #6231F0;
+  --violet-2: #7B4FF5;
+  --violet-deep: #1A0E3C;
+  --violet-side: #3C1D9E;   /* 3D 侧壁(厚底边) */
+  --lime-side: #B8CC00;     /* lime 侧壁 */
+  --red: #FF4D5E;
+
+  /* —— 4. 圆角 —— */
+  --r-xs: 8rpx;
+  --r-sm: 16rpx;
+  --r-md: 24rpx;
+  --r-lg: 32rpx;
+  --r-xl: 40rpx;
+  --r-pill: 999rpx;
+
+  /* —— 5. 间距 —— */
+  --sp-1: 8rpx;
+  --sp-2: 16rpx;
+  --sp-3: 24rpx;
+  --sp-4: 32rpx;
+  --sp-5: 40rpx;
+  --sp-6: 48rpx;
+  --sp-8: 64rpx;
+
+  /* —— 3. 字号 —— */
+  --fs-display: 176rpx;
+  --fs-hero: 128rpx;
+  --fs-h1: 56rpx;
+  --fs-h2: 44rpx;
+  --fs-title: 36rpx;
+  --fs-body: 28rpx;
+  --fs-caption: 24rpx;
+  --fs-label: 20rpx;
+  --fs-micro: 18rpx;
+
+  /* —— 9. 动效 —— */
+  --dur-fast: 150ms;
+  --dur-mid: 250ms;
+  --dur-slow: 500ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1); /* 卡通回弹 */
+
+  /* 全局基底 */
+  background: var(--bg);
+  color: var(--txt);
+  font-family: -apple-system, "PingFang SC", sans-serif;
+  font-size: var(--fs-body);
+}
+
+/* ============ 通用组件(规格见 design.md §12) ============ */
+
+/* 数据数字:粗、表格数字、负字距 */
+.mono {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -2rpx;
+}
+
+/* 强调文字 */
+.glow { color: var(--lime); text-shadow: none; }
+
+/* 大写标签 */
+.hud-label {
+  font-size: var(--fs-label);
+  letter-spacing: 4rpx;
+  color: var(--txt-2);
+  text-transform: uppercase;
+}
+
+/* ============ 卡通 3D(v2.6):纵切明度渐变 + 底部厚边 + 顶内侧受光 ============ */
+.hud-panel {
+  position: relative;
+  background: linear-gradient(180deg, #1B1E27 0%, #14161C 55%, #101218 100%);
+  border: 3rpx solid rgba(255, 255, 255, 0.92);
+  border-radius: var(--r-xl);
+  box-shadow:
+    inset 0 3rpx 0 rgba(255, 255, 255, 0.10),
+    0 12rpx 0 #05070A,
+    14rpx 18rpx 0 rgba(0, 0, 0, 0.45);
+}
+
+/* 主按钮:3D 厚按键(侧壁挤出,按下压到底) */
+.btn-main {
+  background: linear-gradient(180deg, var(--violet-2) 0%, var(--violet) 55%, #5426DB 100%);
+  color: #FFFFFF;
+  border: 3rpx solid rgba(255, 255, 255, 0.92);
+  border-radius: var(--r-lg);
+  font-weight: 800;
+  font-size: var(--fs-body);
+  box-shadow:
+    inset 0 4rpx 0 rgba(255, 255, 255, 0.22),
+    0 12rpx 0 var(--violet-side),
+    0 22rpx 28rpx rgba(0, 0, 0, 0.4);
+  transition: transform 140ms var(--ease-pop), box-shadow 140ms var(--ease);
+}
+.btn-main::after,
+.btn-ghost::after { border: none; } /* 清微信 button 默认描边 */
+.btn-main:active {
+  transform: translateY(12rpx);
+  box-shadow:
+    inset 0 4rpx 0 rgba(255, 255, 255, 0.10),
+    0 2rpx 0 var(--violet-side),
+    0 6rpx 10rpx rgba(0, 0, 0, 0.4);
+  background: var(--violet);
+}
+.btn-main[disabled] { background: var(--panel-2); color: var(--txt-2); box-shadow: 0 12rpx 0 rgba(0, 0, 0, 0.6); }
+
+/* 幽灵按钮 */
+.btn-ghost {
+  background: var(--panel);
+  color: var(--txt-2);
+  border: 3rpx solid rgba(255, 255, 255, 0.35);
+  border-radius: var(--r-lg);
+  box-shadow: 0 8rpx 0 rgba(0, 0, 0, 0.8);
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.btn-ghost:active { transform: translateY(8rpx); box-shadow: 0 0 0 rgba(0, 0, 0, 0.8); }
+.btn-ghost:active { background: var(--panel-2); }
+
+/* 背景环境:紫/lime 光斑(供玻璃模糊显效)+ 极淡点阵 */
+.grid-bg {
+  background-image:
+    radial-gradient(560rpx 560rpx at 88% 4%, rgba(123, 79, 245, 0.30), transparent 70%),
+    radial-gradient(480rpx 480rpx at 6% 90%, rgba(98, 49, 240, 0.22), transparent 70%),
+    radial-gradient(320rpx 320rpx at 80% 56%, rgba(238, 255, 0, 0.05), transparent 70%),
+    radial-gradient(rgba(255, 255, 255, 0.03) 1rpx, transparent 1rpx);
+  background-size: auto, auto, auto, 40rpx 40rpx;
+}
+
+/* ============ 自定义导航 + 大标题排版 ============ */
+.nav {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: var(--sp-2) var(--sp-4) var(--sp-2);
+}
+.nav-title {
+  font-size: 64rpx; font-weight: 800; letter-spacing: -2rpx;
+  color: var(--ink); line-height: 1.15;
+  text-shadow: 0 4rpx 0 rgba(0, 0, 0, 0.65);
+}
+.nav-sub { font-size: var(--fs-micro); color: var(--txt-2); letter-spacing: 4rpx; }
+.nav-back {
+  width: 72rpx; height: 72rpx; border-radius: 50%;
+  background: var(--panel); border: 1rpx solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink); font-size: var(--fs-title);
+}
