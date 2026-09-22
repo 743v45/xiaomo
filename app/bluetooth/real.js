@@ -24,7 +24,10 @@ async function send(arr) {
 
 module.exports = {
   isMock: false,
-  async connect({ onStatus } = {}) {
+  async connect({ onStatus, onConnState } = {}) {
+    state.onConnState = onConnState;
+    const emit = st => state.onConnState && state.onConnState(st);
+    emit('scanning');
     state.cb = onStatus;
     await new Promise((ok, bad) => wx.openBluetoothAdapter({ success: ok, fail: bad }));
     // 扫描并按名字前缀过滤
