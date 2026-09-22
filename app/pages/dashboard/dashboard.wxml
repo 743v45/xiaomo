@@ -1,15 +1,15 @@
 <view class="page grid-bg">
   <!-- 大标题导航(自定义) -->
   <view class="nav" style="padding-top: {{statusBarHeight + 8}}px">
-    <text class="nav-title">动力场</text>
-    <text class="nav-sub">POWER ZONE</text>
-  </view>
-
-  <!-- 连接状态栏 -->
-  <view class="conn-bar hud-panel">
-    <view class="dot {{connected ? 'dot-on' : ''}}"></view>
-    <text class="conn-name">{{connected ? deviceName : '未连接'}}</text>
-    <text class="conn-mode">{{isMock ? '模拟数据' : '真机 BLE'}}</text>
+    <view>
+      <text class="nav-title">动力场</text>
+      <text class="nav-sub">POWER ZONE</text>
+    </view>
+    <view class="conn-btn {{connState === 'ok' ? 'conn-ok' : connState === 'fail' ? 'conn-fail' : (connState === 'scanning' || connState === 'connecting') ? 'conn-busy' : ''}}"
+          bindtap="onConnTap">
+      <image class="bt-logo" src="{{connImg}}"/>
+      <text class="conn-t">{{connText}}</text>
+    </view>
   </view>
 
   <!-- Zone 主视觉:连接后紫色;未连接灰色提示待办 -->

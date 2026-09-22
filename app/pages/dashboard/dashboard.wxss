@@ -7,26 +7,23 @@
   gap: 20rpx;
 }
 
-/* 状态胶囊:小号玻璃配方(blur14 + saturate1.15) */
-.conn-bar {
-  display: flex; align-items: center;
-  padding: 20rpx 28rpx;
-  border-radius: var(--r-pill);
-  backdrop-filter: blur(28rpx) saturate(1.15);
-  -webkit-backdrop-filter: blur(28rpx) saturate(1.15);
+
+/* 右上角连接按钮:logo + 状态文字,四态颜色 */
+.conn-btn {
+  display: flex; align-items: center; gap: 12rpx;
+  padding: 14rpx 24rpx; border-radius: var(--r-pill);
+  background: var(--panel); border: 2rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 5rpx 0 rgba(0, 0, 0, 0.55), inset 0 2rpx 0 rgba(255, 255, 255, 0.08);
 }
-.dot {
-  width: 14rpx; height: 14rpx; border-radius: 50%;
-  background: var(--txt-2); margin-right: var(--sp-2);
-  transition: background-color var(--dur-fast) var(--ease);
-}
-.dot-on { background: var(--lime); box-shadow: 0 0 0 8rpx var(--lime-ring); }
-.conn-name { color: var(--txt); flex: 1; font-weight: 600; font-size: var(--fs-caption); }
-.conn-mode {
-  color: var(--txt-2); font-size: var(--fs-micro);
-  border: 1rpx solid var(--line); border-radius: var(--r-pill);
-  padding: 4rpx 18rpx; letter-spacing: 2rpx;
-}
+.bt-logo { width: 36rpx; height: 36rpx; }
+.conn-t { font-size: 22rpx; font-weight: 700; }
+.conn-ok { border-color: var(--lime); }
+.conn-ok .conn-t { color: var(--lime); }
+.conn-fail { border-color: var(--red); }
+.conn-fail .conn-t { color: var(--red); }
+.conn-busy { animation: connblink 1s infinite; }
+.conn-busy .conn-t { color: #FFB300; }
+@keyframes connblink { 50% { opacity: 0.55 } }
 
 /* ============ Zone 主视觉:立体紫面(纵切渐变 + 白描边 + 侧壁厚边 + 顶受光) ============ */
 /* 未连接:整块转灰,提示"待办" */

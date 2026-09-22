@@ -4,7 +4,7 @@ const config = require('../utils/config');
 const proto = require('../utils/protocol');
 const oplog = require('../utils/oplog');
 
-const state = { device: null, writeChar: null, notifyChar: null, cb: null, res: 1, onDisc: null };
+const state = { device: null, writeChar: null, notifyChar: null, cb: null, res: 1, onDisc: null, onConnState: null };
 
 function ab2arr(buf) { return Array.from(new Uint8Array(buf)); }
 
@@ -36,6 +36,7 @@ module.exports = {
       wx.startBluetoothDevicesDiscovery({ services: [config.SERVICE_UUID] });
     });
     state.device = found;
+    emit('connecting');
     await new Promise((ok, bad) => wx.createBLEConnection({ deviceId: found.deviceId, success: ok, fail: bad }));
     // 微信 iOS 经典坑:连接后立刻服务发现会返回空,必须延迟
     await new Promise(ok => setTimeout(ok, 1200));

@@ -20,6 +20,7 @@ Page({
     maxRes: MAX_RESISTANCE,
     ticks: TICKS,
     pressed: null,
+    connState: 'off', connText: '未连接 · 点击开启', connImg: '/assets/bt-off.png',
     mainBtnText: '开始运动',
     showStop: false,
   },
@@ -29,12 +30,8 @@ Page({
 
   onLoad() {
     this.setData({ statusBarHeight: getApp().globalData.statusBarHeight });
-    bt.connect({}).then(info => {
-      this.setData({ connected: true, deviceName: info.name, resistance: bt.getCurrentResistance() });
-    }).catch(e => {
-      oplog.add('conn_fail', (e && e.errMsg) || '自动连接失败');
-      // 模拟器/未开蓝牙会走到这里;用户点「连接机器」可重试
-    });
+    this.setConnState('off');
+    this.connectNow();
     // mock/真机统一的数据入口:bluetooth 层不直接推帧给页面,
     // 这里用 500ms 视图刷新循环读取 session.last
     this.viewTimer = setInterval(() => this.render(), 500);
@@ -156,16 +153,38 @@ Page({
     }
   },
 
+  // ---- 连接(右上角整块按钮) ----
+  setConnState(s) {
+    const map = {
+      off:        { img: '/assets/bt-off.png',  text: '未连接 · 点击开启' },
+      scanning:   { img: '/assets/bt-scan.png', text: '扫描中…' },
+      connecting: { img: '/assets/bt-scan.png', text: '连接中…' },
+      ok:         { img: '/assets/bt-ok.png',   text: this.data.isMock ? '已连接 · 模拟' : '已连接' },
+      fail:       { img: '/assets/bt-fail.png', text: '失败 · 点击重试' },
+    };
+    const m = map[s] || map.off;
+    this.setData({ connState: s, connImg: m.img, connText: m.text });
+  },
+  onConnTap() {
+    if (bt.isConnected() || this.data.connState === 'scanning' || this.data.connState === 'connecting') return;
+    this.connectNow();
+  },
+  connectNow() {
+    this.setConnState('scanning');
+    bt.connect({ onConnState: st => this.setConnState(st) }).then(info => {
+      this.setData({ connected: true, deviceName: info.name, resistance: bt.getCurrentResistance() });
+      this.setConnState('ok');
+    }).catch(e => {
+      oplog.add('conn_fail', (e && e.errMsg) || '连接失败');
+      this.setConnState('fail');
+      wx.showToast({ title: '连接失败,靠近机器重试', icon: 'none' });
+    });
+  },
+
   // ---- 主控 ----
   mainAction() {
-    if (!bt.isConnected()) {  // 未连接 → 重试连接,不做假开始
-      wx.showToast({ title: '正在连接机器…', icon: 'none' });
-      bt.connect({}).then(info => {
-        this.setData({ connected: true, deviceName: info.name, resistance: bt.getCurrentResistance() });
-      }).catch(e => {
-        oplog.add('conn_fail', (e && e.errMsg) || '连接失败');
-        wx.showToast({ title: '连接失败,靠近机器重试', icon: 'none' });
-      });
+    if (!bt.isConnected()) {  // 未连接 → 走右上角连接
+      this.connectNow();
       return;
     }
     const s = bt.session;
