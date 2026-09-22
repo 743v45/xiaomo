@@ -61,7 +61,33 @@ sys.exit(1 if fail else 0)
 PY
 [ $? -ne 0 ] && FAIL=1
 
-echo "== 6. 已删除符号残留 =="
+echo "== 6. WXML 标签配对 =="
+python3 - <<'PY'
+import re, glob, sys
+fail = 0
+for f in glob.glob('pages/**/*.wxml', recursive=True) + glob.glob('*.wxml'):
+    src = re.sub(r'\{\{[^}]*\}\}', '', open(f).read())  # 去掉插值防干扰
+    stack = []
+    for m in re.finditer(r'<(/?)([a-zA-Z][\w-]*)((?:"[^"]*"|\'[^\']*\'|[^>"\'])*?)(/?)>', src):
+        closing, tag, selfclose = m.group(1), m.group(2), m.group(4)
+        if selfclose == '/': continue
+        if closing == '/':
+            if not stack or stack[-1] != tag:
+                line = src[:m.start()].count('\n') + 1
+                top = stack[-1] if stack else '空'
+                print(f'❌ {f}:{line} </{tag}> 无匹配开始标签(栈顶:{top})'); fail = 1
+                if stack and stack[-1] == tag: stack.pop()
+            else:
+                stack.pop()
+        else:
+            stack.append(tag)
+    if stack:
+        print(f'❌ {f}: 未闭合标签 {stack}'); fail = 1
+sys.exit(1 if fail else 0)
+PY
+[ $? -ne 0 ] && FAIL=1
+
+echo "== 7. 已删除符号残留 =="
 for sym in engine\. training INIT_SEQ START_SEQ pendingCourse; do
   HITS=$(grep -rn "$sym" --include="*.js" --include="*.wxml" --include="*.json" . 2>/dev/null)
   [ -n "$HITS" ] && { echo "❌ 残留引用 [$sym]:"; echo "$HITS" | head -3; FAIL=1; }

@@ -16,10 +16,8 @@
     </view>
     <view class="row">
       <text class="k">协议</text>
-      <text class="v">ChangYow FFE0(待验证)</text>
+      <text class="v">ChangYow 0xAB 帧(实抓验证)</text>
     </view>
-  </view>
-
     <view class="row link" bindtap="openOplog">
       <text class="k">蓝牙操作日志</text>
       <text class="v">›</text>
